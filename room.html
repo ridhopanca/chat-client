@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<title>Room page realtime chat</title>
+<body>
+	<div>
+		Room <span id="nameRoom"></span> <button onclick="back();">Back</button>
+	</div>
+	<div id="conversation">
+	</div>
+	<div>
+		<label>message</label>
+		<input type="text" name="message" placeholder="Type Message..."/>
+		<button id="sendMessage">Post Message</button>
+	</div>
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+	let urlHost = 'http://10.10.11.155:3000/'; //change with your local server
+	let roomId = localStorage.getItem('chatRoomId');
+	let userId = localStorage.getItem('chatUserId');
+	let auth = localStorage.getItem('chatAuth');
+	const socket = io(urlHost);
+	socket.on('connect', function() {
+			console.log("Connected to WS server");
+			console.log(socket.connected)
+			socket.on('new message', (response) => {
+				let data = response.message;
+				let template = "";
+				template += `
+							<div>
+									<span>${data.postedByUser.firstName}</span>
+									<span>${convertDate(data.createdAt)}</span>
+									<div>${data.message.messageText}</div>
+								</div>
+						`;
+				$('#conversation').append(template);
+			})
+	});
+	socket.emit('identity', userId);
+	socket.emit('subscribe', roomId);
+	$('#nameRoom').text(roomId);
+	$.ajax({
+		url: urlHost + 'api/room/' + roomId,
+		method: 'GET',
+		headers: {'authorization' : `Bearer ${auth}`},
+		dataType: 'json',
+		success: function(response){
+			let template = '';
+			const chat = response.conversation;
+			if(chat.length > 0){
+				$.each(chat, function(key, val){
+					template += `
+						<div>
+       							<span>${val.postedByUser.firstName}</span>
+       							<span>${convertDate(val.postedByUser.createdAt)}</span>
+       							<div>${val.message.messageText}</div>
+       						</div>
+					`;
+				});
+			}
+			$('#conversation').html(template);
+		},
+		error: function(xhr){
+			alert(xhr.responseJSON.message);
+			console.log(xhr);
+		}
+	});
+
+	function convertDate(date){
+		var data = new Date(date);
+		var year = data.getFullYear();
+		var month = data.getMonth()+1;
+		var dt = data.getDate();
+		var hour = data.getHours();
+		var min = data.getMinutes();
+		if(month < 10){
+			month  = '0' + month;
+		}
+		if(dt < 10){
+                        dt  = '0' + dt;
+                }
+		if(hour < 10){
+                        hour  = '0' + hour;
+                }
+		if(min < 10){
+                        min  = '0' + min;
+                }
+		var result = year + '/' + month + '/' + dt + ' ' + hour + ':' + min;
+		return result;
+	}
+
+	function back(){
+		socket.emit('unsubscribe',roomId);
+		socket.disconnect();
+		document.location = './home.html';
+	}
+	$('#sendMessage').click(function(){
+		var message = $('input[name=message]').val();
+		$.ajax({
+			url: urlHost + 'api/room/' + roomId + '/message',
+			headers: {
+				'Content-Type' : 'application/json',
+				'authorization' : `Bearer ${auth}`
+			},
+			method: 'POST',
+			dataType: 'json',
+			data: JSON.stringify({messageText:message}),
+			success: function(response){
+				$('input[name=message]').val('');
+			},
+			error: function(xhr){
+				alert(xhr.responseJSON.message)
+			}
+		});
+	})
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home Page realtime chat</title>
+</head>
+<body>
+	<div>
+		Welcome, <span id="names"></span> <button id="btnLogout"> Logout </button>
+	</div>
+	<div>
+		<select id="userList" name="userList"></select>
+		<button id="btnRoom">Create New Room</button>
+	</div>
+	<div id="lastConversation">
+	</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+	let name = localStorage.getItem('chatUserName');
+	let auth = localStorage.getItem('chatAuth');
+	let userId = localStorage.getItem('chatUserId');
+	let urlHost = 'http://10.10.11.155:3000/'; //change with your local server
+	$('#names').text(name);
+	$.ajax({
+		url: urlHost + 'api/users',
+		method: 'GET',
+		dataType: 'json',
+		success: function(response) {
+			const users = response.users;
+			let template = '';
+			if(users.length > 0){
+				template += `<option value="0">Choose users</option>`;
+				$.each(users, function(key, val){
+					if( val._id != userId){
+						template += `<option value="${val._id}">${val.firstName} ${val.lastName}</option>`;
+					}
+				});
+			}
+			$('#userList').html(template);
+		},
+		error: function(xhr){
+			alert('error');
+			console.log(xhr)
+		}
+	})
+
+	$.ajax({
+		url: urlHost + 'api/room',
+		method: 'GET',
+		headers: {'authorization': `Bearer ${auth}`},
+		dataType: 'json',
+		success: function(response){
+			const room = response.conversation;
+			let template = '';
+			if(room.length > 0){
+				$.each(room, function(key, val){
+					template += `
+       						<div onclick="goToRoom('${val.chatRoomId}')" style="cursor:pointer">
+       							<div>
+       								<h5><strong>${val.chatRoomId}</strong></h5>
+       								<h6>${convertDate(val.postedByUser.createdAt)}</h6>
+       							</div>
+       							<div>
+       								<span>${val.postedByUser.firstName} : </span> 
+       								<span>${val.message.messageText}</span>
+       							</div>
+       							
+       						</div>
+					`;
+				});
+			}
+			$('#lastConversation').html(template);
+		},
+		error: function(xhr){
+			alert(xhr.responseJSON.message);
+			console.log(xhr);
+		}
+	})
+	$('#btnLogout').on("click", function(){
+		localStorage.removeItem('chatUser');
+		localStorage.removeItem('chatAuth');
+		localStorage.removeItem('chatUserId');
+		localStorage.removeItem('chatRoomId');
+		document.location = './index.html';
+	});
+	$('#btnRoom').click(function(){
+		const user = $('#userList').val();
+		if( user == '0' ){
+			alert('Please choose user first, before creating new room');	
+		} else {
+			alert('run create room');
+		}
+	});
+	function convertDate(date){
+		var newDate = new Date(date);
+		var year = newDate.getFullYear();
+		var month = newDate.getMonth()+1;
+		var dt = newDate.getDate();
+		if(dt < 10){
+			dt = '0' + dt;
+		}
+		if(month < 10){
+			month = '0' + month;
+		}
+		var result = dt + '/' + month + '/' + year;
+		return result;
+	}
+
+	function goToRoom(roomId){
+		localStorage.setItem('chatRoomId',roomId);
+		document.location = './room.html';
+	}
+</script>
+</body>
+</html>

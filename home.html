@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Home Page realtime chat</title>
+	<title>Home page realtime chat</title>
 </head>
 <body>
 	<div>
 		Welcome, <span id="names"></span> <button id="btnLogout"> Logout </button>
 	</div>
 	<div>
+		<label for="roomName">Room Name</label>
+		<input type="text" name="name" placeholder="Example Name" />
 		<select id="userList" name="userList"></select>
 		<button id="btnRoom">Create New Room</button>
 	</div>
@@ -53,19 +55,33 @@
 			let template = '';
 			if(room.length > 0){
 				$.each(room, function(key, val){
-					template += `
-       						<div onclick="goToRoom('${val.chatRoomId}')" style="cursor:pointer">
-       							<div>
-       								<h5><strong>${val.chatRoomId}</strong></h5>
-       								<h6>${convertDate(val.postedByUser.createdAt)}</h6>
-       							</div>
-       							<div>
-       								<span>${val.postedByUser.firstName} : </span> 
-       								<span>${val.message.messageText}</span>
-       							</div>
-       							
-       						</div>
-					`;
+					if(val.messageId){
+						template += `
+								   <div onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer">
+									   <div>
+										   <h5><strong>${val.chatRoomName}</strong></h5>
+										   <h6>${convertDate(val.postedByUser.createdAt)}</h6>
+									   </div>
+									   <div>
+										   <span>${val.postedByUser.firstName} : </span> 
+										   <span>${val.message.messageText}</span>
+									   </div>
+									   
+								   </div>
+						`;
+					} else {
+						template += `
+								   <div onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer">
+									   <div>
+										   <h5><strong>${val.chatRoomName}</strong></h5>
+									   </div>
+									   <div>
+										   <span>No messages yet</span>
+									   </div>
+									   
+								   </div>
+						`;
+					}
 				});
 			}
 			$('#lastConversation').html(template);
@@ -80,14 +96,37 @@
 		localStorage.removeItem('chatAuth');
 		localStorage.removeItem('chatUserId');
 		localStorage.removeItem('chatRoomId');
+		localStorage.removeItem('chatRoomName');
 		document.location = './index.html';
 	});
 	$('#btnRoom').click(function(){
-		const user = $('#userList').val();
-		if( user == '0' ){
-			alert('Please choose user first, before creating new room');	
+		let user = $('#userList').val();
+		let name = $('input[name=name]').val();
+		if( user == '0' || name == ''){
+			alert('Please choose user and fill the room name first, before creating new room');	
 		} else {
-			alert('run create room');
+			const users = [];
+			users.push(user);
+			const data = { name: name, userIds: users, type: "consumer-to-consumer"};
+			$.ajax({
+				url: urlHost + 'api/room/initiate',
+				method: 'POST',
+				headers: {'authorization': `Bearer ${auth}`, 'Content-type':'application/json'},
+				dataType: 'json',
+				data: JSON.stringify(data),
+				success: function(response){
+					var res = response.chatRoom;
+					if(res.isNew){
+						alert(res.message);
+					} else {
+						alert(`Group with those user already exists, doesn't create a new room`);
+					}
+				},
+				error: function(xhr){
+					console.log(xhr)
+					alert('Something error');
+				}
+			});
 		}
 	});
 	function convertDate(date){
@@ -105,8 +144,9 @@
 		return result;
 	}
 
-	function goToRoom(roomId){
+	function goToRoom(roomId,roomName){
 		localStorage.setItem('chatRoomId',roomId);
+		localStorage.setItem('chatRoomName',roomName);
 		document.location = './room.html';
 	}
 </script>

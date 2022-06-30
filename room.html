@@ -17,6 +17,7 @@
 <script>
 	let urlHost = 'http://10.10.11.155:3000/'; //change with your local server
 	let roomId = localStorage.getItem('chatRoomId');
+	let roomName = localStorage.getItem('chatRoomName');
 	let userId = localStorage.getItem('chatUserId');
 	let auth = localStorage.getItem('chatAuth');
 	const socket = io(urlHost);
@@ -38,7 +39,7 @@
 	});
 	socket.emit('identity', userId);
 	socket.emit('subscribe', roomId);
-	$('#nameRoom').text(roomId);
+	$('#nameRoom').text(roomName);
 	$.ajax({
 		url: urlHost + 'api/room/' + roomId,
 		method: 'GET',

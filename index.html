@@ -147,7 +147,7 @@
 		$("#btnRegister").on('click', function () {
 			var first = $('#firstName').val();
 			var last = $('#lastName').val();
-			if(first == '' || last == ''){
+			if (first == '' || last == '') {
 				Swal.fire({
 					icon: 'info',
 					text: 'please fill all data',
@@ -156,19 +156,25 @@
 				$.ajax({
 					url: urlHost + 'api/users',
 					method: 'POST',
-					headers: {'Content-Type':'application/json'},
+					headers: {
+						'Content-Type': 'application/json'
+					},
 					dataType: 'json',
-					data: JSON.stringify({firstName:first,lastName:last,type:'consumer'}),
-					success: function(response){
+					data: JSON.stringify({
+						firstName: first,
+						lastName: last,
+						type: 'consumer'
+					}),
+					success: function (response) {
 						$('#firstName').val('');
 						$('#lastName').val('');
 						$('#exampleModal').modal('hide');
 						Swal.fire({
 							icon: 'info',
-							text: 'congrats! ountinue login with your first name',
+							text: 'congrats! Continue login with your first name',
 						});
 					},
-					error: function(xhr){
+					error: function (xhr) {
 						Swal.fire({
 							icon: 'info',
 							text: xhr.responseJSON.message,

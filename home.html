@@ -133,10 +133,10 @@
 					$.each(room, function (key, val) {
 						if (val.messageId) {
 							template += `
-								   <div class="border p-2 mt-2 bg-secondary bg-opacity-10"
+								   <div class="border rounded p-2 mt-2 bg-secondary bg-opacity-10"
 								   	onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer">
 									   <div class="d-flex justify-content-between align-items-center">
-										   <p class="m-0"><strong>${val.chatRoomName}</strong></p>
+										   <p class="m-0 fw-semibold">${val.chatRoomName}</p>
 										   <small class="text-muted" style="font-size:10px">${convertDate(val.messageCreatedAt)}</small>
 									   </div>
 									   <div>
@@ -148,12 +148,13 @@
 						`;
 						} else {
 							template += `
-								   <div onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer">
+								   <div class="border rounded p-2 mt-2"
+								   	onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer">
 									   <div>
-										   <p class="m-0"><strong>${val.chatRoomName}</strong></p>
+										   <p class="m-0 fw-semibold">${val.chatRoomName}</p>
 									   </div>
 									   <div>
-										   <small>No messages yet</small>
+										   <small class="fw-lighter font-monospace">No messages yet</small>
 									   </div>
 									   
 								   </div>

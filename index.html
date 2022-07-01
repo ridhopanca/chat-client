@@ -20,26 +20,65 @@
 	background-repeat: no-repeat; background-attachment: fixed; background-position: center; background-size: cover;">
 	<section>
 		<div class="d-flex justify-content-center mt-5">
-			<div class="col-lg-4">
-				<div class="card">
-					<div class="card-header text-center">
+			<div class="col-lg-3">
+				<div class="card border-dark border-2">
+					<div class="card-header py-3 text-center border-dark border-2">
 						<i class="fa-brands fa-rocketchat fa-5x"></i>
 					</div>
 					<div class="card-body p-4">
 						<form id="formLogin">
+							<h4 class="text-center">Sign In</h4>
+							<hr>
 							<div class="mb-3">
-								<label for="exampleFormControlInput1" class="form-label">Username</label>
+								<label for="exampleFormControlInput1" class="form-label">Firstname</label>
 								<input type="text" name="username" class="form-control" id="exampleFormControlInput1" />
 							</div>
-							<div class="d-grid ">
+							<div class="d-grid mb-3">
 								<button type="button" id="btnClick" class="btn btn-dark btn-block">Login</button>
 							</div>
+
+							<small class="d-block text-center">Don’t you have an account? <a href="#"
+									class="text-reset fw-semibold text-decoration-none" data-bs-toggle="modal"
+									data-bs-target="#exampleModal">Sign
+									up</a></small>
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
+
+	<!-- Button trigger modal -->
+	<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+		Launch demo modal
+	</button> -->
+
+	<!-- Modal -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content border-0">
+				<div class="modal-header bg-dark justify-content-center">
+					<h5 class="modal-title text-white" id="exampleModalLabel">Sign Up</h5>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="mb-3">
+							<label for="exampleFormControlInput1" class="form-label">Firstname</label>
+							<input type="text" class="form-control" id="exampleFormControlInput1" />
+						</div>
+						<div class="mb-3">
+							<label for="exampleFormControlInput2" class="form-label">Lastname</label>
+							<input type="text" class="form-control" id="exampleFormControlInput2" />
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-dark px-4">Sign Up</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/fontawesome.min.js"
 		integrity="sha512-5qbIAL4qJ/FSsWfIq5Pd0qbqoZpk5NcUVeAAREV2Li4EKzyJDEGlADHhHOSSCw0tHP7z3Q4hNHJXa81P92borQ=="

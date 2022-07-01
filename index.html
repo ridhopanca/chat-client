@@ -63,18 +63,18 @@
 				<div class="modal-body">
 					<form>
 						<div class="mb-3">
-							<label for="exampleFormControlInput1" class="form-label">Firstname</label>
-							<input type="text" class="form-control" id="exampleFormControlInput1" />
+							<label for="firstName" class="form-label">Firstname</label>
+							<input type="text" class="form-control" name="firstName" id="firstName" />
 						</div>
 						<div class="mb-3">
-							<label for="exampleFormControlInput2" class="form-label">Lastname</label>
-							<input type="text" class="form-control" id="exampleFormControlInput2" />
+							<label for="lastName" class="form-label">Lastname</label>
+							<input type="text" class="form-control" name="lastName" id="lastName" />
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-dark px-4">Sign Up</button>
+					<button type="button" class="btn btn-dark px-4" id="btnRegister">Sign Up</button>
 				</div>
 			</div>
 		</div>
@@ -93,6 +93,7 @@
 		integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous">
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.17.2/dist/sweetalert2.all.min.js"></script>
 	<script>
 		let urlHost = 'http://10.10.11.155:3000/'; //change with your local server
 
@@ -125,18 +126,58 @@
 							document.location = './home.html';
 						},
 						error: function (xhr) {
-							alert(xhr.responseJSON.message);
+							Swal.fire({
+								icon: 'error',
+								title: 'Oops...',
+								text: xhr.responseJSON.message,
+							});
 						}
 					})
 				},
 				error: function (xhr) {
-					alert(xhr.responseJSON.error.error);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: xhr.responseJSON.error.error,
+					});
 				}
 
 			})
 		});
+		$("#btnRegister").on('click', function () {
+			var first = $('#firstName').val();
+			var last = $('#lastName').val();
+			if(first == '' || last == ''){
+				Swal.fire({
+					icon: 'info',
+					text: 'please fill all data',
+				});
+			} else {
+				$.ajax({
+					url: urlHost + 'api/users',
+					method: 'POST',
+					headers: {'Content-Type':'application/json'},
+					dataType: 'json',
+					data: JSON.stringify({firstName:first,lastName:last,type:'consumer'}),
+					success: function(response){
+						$('#firstName').val('');
+						$('#lastName').val('');
+						$('#exampleModal').modal('hide');
+						Swal.fire({
+							icon: 'info',
+							text: 'congrats! ountinue login with your first name',
+						});
+					},
+					error: function(xhr){
+						Swal.fire({
+							icon: 'info',
+							text: xhr.responseJSON.message,
+						});
+					}
+				});
+			}
+		})
 	</script>
-
 </body>
 
 </html>

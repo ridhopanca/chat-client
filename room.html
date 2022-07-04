@@ -156,92 +156,124 @@
 	<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script>
-		var objDiv = document.getElementById("conversation");
-		objDiv.scrollTop = objDiv.scrollHeight;
 		let urlHost = 'http://10.10.20.223:3000/'; //change with your local server
 		let roomId = localStorage.getItem('chatRoomId');
 		let roomName = localStorage.getItem('chatRoomName');
 		let userId = localStorage.getItem('chatUserId');
 		let username = localStorage.getItem('chatUserName');
 		let auth = localStorage.getItem('chatAuth');
-
 		const socket = io(urlHost);
+		getData();
 		socket.on('connect', function () {
 			console.log("Connected to WS server");
 			console.log(socket.connected)
 			socket.on('new message', (response) => {
 				let data = response.message;
 				let template = "";
-				template += `
-							<div>
-									<span>${data.postedByUser.firstName}</span>
-									<span>${convertDate(data.createdAt)}</span>
-									<div>${data.message.messageText}</div>
-								</div>
-						`;
-				$('#conversation').append(template);
-			})
-		});
-		socket.emit('identity', userId);
-		socket.emit('subscribe', roomId);
-		$('#nameRoom').text(roomName);
-		$.ajax({
-			url: urlHost + 'api/room/' + roomId,
-			method: 'GET',
-			headers: {
-				'authorization': `Bearer ${auth}`
-			},
-			dataType: 'json',
-			success: function (response) {
-				let template = '';
-				const chat = response.conversation;
-				if (chat.length > 0) {
-					$.each(chat, function (key, val) {
-						let fullname = val.postedByUser.firstName + ' ' + val.postedByUser.lastName;
-						let substring = val.postedByUser.firstName.substr(0, 1);
-						if (fullname == username) {
-
-							template += `
-						<div class="flex-row-reverse mb-2	 ms-auto d-flex text-end">
+				let fullname = data.postedByUser.firstName + ' ' + data.postedByUser.lastName;
+				let substring = data.postedByUser.firstName.substr(0, 1);
+				if (fullname == username) {
+					template += `
+						<div class="flex-row-reverse mb-2 ms-auto d-flex text-end">
 							<div class="ms-2">
 								<img src="https://via.placeholder.com/35x35/55585C/ffffff.jpg?text=${substring}" class="rounded-circle mr-1"
 									alt="Chris Wood">
 							</div>
 							<div>
-								<small class="fw-semibold mb-1 fs-10">${val.postedByUser.firstName}</small>
+								<small class="fw-semibold mb-1 fs-10">${data.postedByUser.firstName}</small>
 								<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2">
-									<p class="word-break m-0">${val.message.messageText}</p>
+									<p class="word-break m-0">${data.message.messageText}</p>
 								</div>
-								<small style="font-size:10px;">${convertDate(val.createdAt)}</small>
+								<small style="font-size:10px;">${convertDate(data.createdAt)}</small>
 							</div>
 						</div>
 						`;
-						} else {
-							template += `
-						<div class="mb-2	 me-auto d-flex text-first">
+				} else {
+					template += `
+						<div class="mb-2 me-auto d-flex text-first">
 							<div class="me-2">
 								<img src="https://via.placeholder.com/35x35/ffffff/55585C.jpg?text=${substring}" class="rounded-circle mr-1"
 									alt="Sharon Lessman">
 							</div>
 							<div>
-								<div class="fw-semibold mb-1 fs-10 ">${val.postedByUser.firstName}</div>
+								<div class="fw-semibold mb-1 fs-10 ">${data.postedByUser.firstName}</div>
 								<div class="flex-shrink-1 bg-light rounded p-2">
-									<p class="word-break m-0">${val.message.messageText}</p>
+									<p class="word-break m-0">${data.message.messageText}</p>
 								</div>
-								<small style="font-size:10px;">${convertDate(val.createdAt)}</small>
+								<small style="font-size:10px;">${convertDate(data.createdAt)}</small>
 							</div>
 						</div>
 						`;
-						}
-					});
 				}
-				$('#conversation').html(template);
-			},
-			error: function (xhr) {
-				alert(xhr.responseJSON.message);
-				console.log(xhr);
-			}
+				$('#conversation').append(template);
+				var objDiv = document.getElementById("conversation");
+				objDiv.scrollTop = objDiv.scrollHeight;
+			})
 		});
+		socket.emit('identity', userId);
+		socket.emit('subscribe', roomId);
+		$('#nameRoom').text(roomName);
+		function getData(){
+			$.ajax({
+				url: urlHost + 'api/room/' + roomId,
+				method: 'GET',
+				headers: {
+					'authorization': `Bearer ${auth}`
+				},
+				dataType: 'json',
+				success: function (response) {
+					let template = '';
+					const chat = response.conversation;
+					if (chat.length > 0) {
+						$.each(chat, function (key, val) {
+							let fullname = val.postedByUser.firstName + ' ' + val.postedByUser.lastName;
+							let substring = val.postedByUser.firstName.substr(0, 1);
+							if (fullname == username) {
+	
+								template += `
+									<div class="flex-row-reverse mb-2 ms-auto d-flex text-end">
+										<div class="ms-2">
+											<img src="https://via.placeholder.com/35x35/55585C/ffffff.jpg?text=${substring}" class="rounded-circle mr-1"
+												alt="Chris Wood">
+										</div>
+										<div>
+											<small class="fw-semibold mb-1 fs-10">${val.postedByUser.firstName}</small>
+											<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2">
+												<p class="word-break m-0">${val.message.messageText}</p>
+											</div>
+											<small style="font-size:10px;">${convertDate(val.createdAt)}</small>
+										</div>
+									</div>
+									`;
+							} else {
+								template += `
+									<div class="mb-2 me-auto d-flex text-first">
+										<div class="me-2">
+											<img src="https://via.placeholder.com/35x35/ffffff/55585C.jpg?text=${substring}" class="rounded-circle mr-1"
+												alt="Sharon Lessman">
+										</div>
+										<div>
+											<div class="fw-semibold mb-1 fs-10 ">${val.postedByUser.firstName}</div>
+											<div class="flex-shrink-1 bg-light rounded p-2">
+												<p class="word-break m-0">${val.message.messageText}</p>
+											</div>
+											<small style="font-size:10px;">${convertDate(val.createdAt)}</small>
+										</div>
+									</div>
+									`;
+							}
+						});
+					}
+					$('#conversation').html(template);
+					var objDiv = document.getElementById("conversation");
+					objDiv.scrollTop = objDiv.scrollHeight;
+				},
+				error: function (xhr) {
+					alert(xhr.responseJSON.message);
+					console.log(xhr);
+				}
+			});
+		}
 
 		function convertDate(date) {
 			var data = new Date(date);
@@ -271,7 +303,16 @@
 			socket.disconnect();
 			document.location = './home.html';
 		}
+		$("input[name=message]").keypress(function (e) {
+			if (e.keyCode == 13) {
+				sendMessage();
+			}
+		});
 		$('#sendMessage').click(function () {
+			sendMessage();
+		})
+
+		function sendMessage(){
 			var message = $('input[name=message]').val();
 			$.ajax({
 				url: urlHost + 'api/room/' + roomId + '/message',
@@ -291,7 +332,7 @@
 					alert(xhr.responseJSON.message)
 				}
 			});
-		})
+		}
 	</script>
 </body>
 

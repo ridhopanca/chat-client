@@ -56,7 +56,7 @@
 					<form>
 						<div class="form-floating mb-3">
 							<input type="text" name="name" class="form-control" id="roomName" placeholder="Room Name" />
-							<label for="roomName" class="form-label">Room Name</label>
+							<label for="roomName" class="form-label"> Room Name</label>
 						</div>
 						<div class="form-floating mb-3">
 							<select class="form-select" id="userList" name="userList" aria-label="Floating label select example">
@@ -94,7 +94,7 @@
 		let name = localStorage.getItem('chatUserName');
 		let auth = localStorage.getItem('chatAuth');
 		let userId = localStorage.getItem('chatUserId');
-		let urlHost = 'http://10.10.11.155:3000/'; //change with your local server
+		let urlHost = 'http://10.10.20.223:3000/'; //change with your local server
 		$('#names').text(name);
 		$.ajax({
 			url: urlHost + 'api/users',

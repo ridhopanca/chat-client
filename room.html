@@ -53,6 +53,36 @@
 			flex-direction: row-reverse;
 			margin-left: auto
 		} */
+		.lds-ring div {
+			box-sizing: border-box;
+			display: block;
+			position: absolute;
+			width: 18px;
+			height: 18px;
+			left: 50%;
+			margin: 2px;
+			border: 2px solid #55585C;
+			border-radius: 50%;
+			animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+			border-color: #55585C transparent transparent transparent;
+		}
+		.lds-ring div:nth-child(1) {
+			animation-delay: -0.45s;
+		}
+		.lds-ring div:nth-child(2) {
+			animation-delay: -0.3s;
+		}
+		.lds-ring div:nth-child(3) {
+			animation-delay: -0.15s;
+			}
+			@keyframes lds-ring {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
 	</style>
 </head>
 
@@ -69,6 +99,7 @@
 						</div>
 					</div>
 					<div class="card-body bg-secondary text-dark bg-opacity-10">
+						<div class="lds-ring d-none"><div></div><div></div><div></div><div></div></div>
 						<div id="conversation" class="chat-messages">
 						</div>
 					</div>
@@ -163,6 +194,7 @@
 		let userId = localStorage.getItem('chatUserId');
 		let username = localStorage.getItem('chatUserName');
 		let auth = localStorage.getItem('chatAuth');
+		let page = 0;
 		const socket = io(urlHost);
 		getData();
 		socket.on('connect', function () {
@@ -335,6 +367,84 @@
 				}
 			});
 		}
+		const yd=$('#conversation');
+        var lastScrollTop=Infinity;
+        yd.scrollTop(yd.prop("scrollHeight") - yd.prop("clientHeight")).on('wheel',wheel);
+        function wheel(){
+            const st=$(this).scrollTop();
+            if (st<=lastScrollTop && st<300) {getMore()};
+            lastScrollTop=st;
+        }
+        function getMore(){
+			page = page + 1;
+			$.ajax({
+					url: urlHost + 'api/room/' + roomId + '?page=' + page,
+					method: 'GET',
+					headers: {
+						'authorization': `Bearer ${auth}`
+					},
+					dataType: 'json',
+					success: function (response) {
+						let template = '';
+						const chat = response.conversation;
+						if (chat.length > 0) {
+							$.each(chat, function (key, val) {
+								let fullname = val.postedByUser.firstName + ' ' + val.postedByUser.lastName;
+								let substring = val.postedByUser.firstName.substr(0, 1);
+								if (fullname == username) {
+
+									template += `
+										<div class="flex-row-reverse mb-2 ms-auto d-flex text-end">
+											<div class="ms-2">
+												<img src="https://via.placeholder.com/35x35/55585C/ffffff.jpg?text=${substring}" class="rounded-circle mr-1"
+													alt="Chris Wood">
+											</div>
+											<div>
+												<small class="fw-semibold mb-1 fs-10">${val.postedByUser.firstName}</small>
+												<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2">
+													<p class="word-break m-0">${val.message.messageText}</p>
+												</div>
+												<small class="text-secondary text-opacity-50 fs-10">${convertDate(val.createdAt)}</small>
+											</div>
+										</div>
+										`;
+								} else {
+									template += `
+										<div class="mb-2 me-auto d-flex text-first">
+											<div class="me-2">
+												<img src="https://via.placeholder.com/35x35/ffffff/55585C.jpg?text=${substring}" class="rounded-circle mr-1"
+													alt="Sharon Lessman">
+											</div>
+											<div>
+												<div class="fw-semibold mb-1 fs-10 ">${val.postedByUser.firstName}</div>
+												<div class="flex-shrink-1 bg-light rounded p-2">
+													<p class="word-break m-0">${val.message.messageText}</p>
+												</div>
+												<small class="text-secondary text-opacity-50 fs-10">${convertDate(val.createdAt)}</small>
+											</div>
+										</div>
+										`;
+								}
+							});
+							$('.lds-ring').toggleClass('d-none');
+							const lastHeight=yd.prop("scrollHeight")
+							yd.prepend(template)
+							yd.scrollTop(yd.prop("scrollHeight")-lastHeight+4);
+							yd.off("wheel",wheel);
+							setTimeout(function(){
+								yd.on('wheel',wheel);
+								$('.lds-ring').toggleClass('d-none');
+							},2000);
+						} else {
+							page = page - 1;
+						}
+					},
+					error: function (xhr) {
+						alert(xhr.responseJSON.message);
+						console.log(xhr);
+					}
+				});
+        }
 	</script>
 </body>
 

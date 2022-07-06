@@ -76,7 +76,23 @@
 			</div>
 		</div>
 	</div>
-
+	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content border-0">
+				<div class="modal-header bg-dark justify-content-center">
+					<h5 class="modal-title text-white" id="deleteModalLabel">Delete Room</h5>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" name="messageId" id="roomId">
+					Are you sure want to delete this (<span id="roomText"></span>) room ?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-dark px-4" id="btnDelete">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/fontawesome.min.js"
 		integrity="sha512-5qbIAL4qJ/FSsWfIq5Pd0qbqoZpk5NcUVeAAREV2Li4EKzyJDEGlADHhHOSSCw0tHP7z3Q4hNHJXa81P92borQ=="
 		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -90,12 +106,18 @@
 		integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous">
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.17.2/dist/sweetalert2.all.min.js"></script>
 	<script>
+		$(document).bind("contextmenu", function(e) {
+			return false;
+		});
+
 		let name = localStorage.getItem('chatUserName');
 		let auth = localStorage.getItem('chatAuth');
 		let userId = localStorage.getItem('chatUserId');
 		let urlHost = 'http://10.10.20.223:3000/'; //change with your local server
 		$('#names').text(name);
+		getData();
 		$.ajax({
 			url: urlHost + 'api/users',
 			method: 'GET',
@@ -118,57 +140,58 @@
 				console.log(xhr)
 			}
 		})
-
-		$.ajax({
-			url: urlHost + 'api/room',
-			method: 'GET',
-			headers: {
-				'authorization': `Bearer ${auth}`
-			},
-			dataType: 'json',
-			success: function (response) {
-				const room = response.conversation;
-				let template = '';
-				if (room.length > 0) {
-					$.each(room, function (key, val) {
-						if (val.messageId) {
-							template += `
-								   <div class="border rounded p-2 mt-2 bg-secondary bg-opacity-10"
-								   	onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer">
-									   <div class="d-flex justify-content-between align-items-center">
-										   <p class="m-0 fw-semibold">${val.chatRoomName}</p>
-										   <small class="text-muted" style="font-size:10px">${convertDate(val.messageCreatedAt)}</small>
+		function getData(){
+			$.ajax({
+				url: urlHost + 'api/room',
+				method: 'GET',
+				headers: {
+					'authorization': `Bearer ${auth}`
+				},
+				dataType: 'json',
+				success: function (response) {
+					const room = response.conversation;
+					let template = '';
+					if (room.length > 0) {
+						$.each(room, function (key, val) {
+							if (val.messageId) {
+								template += `
+									   <div class="border rounded p-2 mt-2 bg-secondary bg-opacity-10"
+										   onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" oncontextmenu="deleteRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer" id="${val.chatRoomId}">
+										   <div class="d-flex justify-content-between align-items-center">
+											   <p class="m-0 fw-semibold">${val.chatRoomName}</p>
+											   <small class="text-muted" style="font-size:10px">${convertDate(val.messageCreatedAt)}</small>
+										   </div>
+										   <div>
+											   <small class="fw-lighter">${val.postedByUser.firstName} : </small> 
+											   <small class="fw-lighter">${val.message.messageText}</small>
+										   </div>
+										   
 									   </div>
-									   <div>
-										   <small class="fw-lighter">${val.postedByUser.firstName} : </small> 
-										   <small class="fw-lighter">${val.message.messageText}</small>
+							`;
+							} else {
+								template += `
+									   <div class="border rounded p-2 mt-2"
+										   onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" oncontextmenu="deleteRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer" id="${val.chatRoomId}">
+										   <div>
+											   <p class="m-0 fw-semibold">${val.chatRoomName}</p>
+										   </div>
+										   <div>
+											   <small class="fw-lighter font-monospace">No messages yet</small>
+										   </div>
+										   
 									   </div>
-									   
-								   </div>
-						`;
-						} else {
-							template += `
-								   <div class="border rounded p-2 mt-2"
-								   	onclick="goToRoom('${val.chatRoomId}','${val.chatRoomName}')" style="cursor:pointer">
-									   <div>
-										   <p class="m-0 fw-semibold">${val.chatRoomName}</p>
-									   </div>
-									   <div>
-										   <small class="fw-lighter font-monospace">No messages yet</small>
-									   </div>
-									   
-								   </div>
-						`;
-						}
-					});
+							`;
+							}
+						});
+					}
+					$('#lastConversation').html(template);
+				},
+				error: function (xhr) {
+					alert(xhr.responseJSON.message);
+					console.log(xhr);
 				}
-				$('#lastConversation').html(template);
-			},
-			error: function (xhr) {
-				alert(xhr.responseJSON.message);
-				console.log(xhr);
-			}
-		})
+			})
+		}
 		$('#btnLogout').on("click", function () {
 			localStorage.removeItem('chatUser');
 			localStorage.removeItem('chatAuth');
@@ -202,14 +225,23 @@
 					success: function (response) {
 						var res = response.chatRoom;
 						if (res.isNew) {
-							alert(res.message);
+							getData();
+							$('#exampleModal').modal('hide');
+							$('#roomName').val('');
+							$("#userList").val(0).change();
 						} else {
-							alert(`Group with those user already exists, doesn't create a new room`);
+							Swal.fire({
+								icon: 'info',
+								text: "Group with those user already exists, doesn't create a new room",
+							});
 						}
 					},
 					error: function (xhr) {
 						console.log(xhr)
-						alert('Something error');
+						Swal.fire({
+							icon: 'error',
+							text: "Something error, please try again later",
+						});
 					}
 				});
 			}
@@ -235,6 +267,41 @@
 			localStorage.setItem('chatRoomName', roomName);
 			document.location = './room.html';
 		}
+
+		function deleteRoom(room,text){
+			$('#roomId').val(room);
+			$('#roomText').text(text);
+			$('#deleteModal').modal('show');
+		}
+
+
+		$('#btnDelete').click(function(){
+			$('#btnDelete').prop('disabled',true)
+			let room = $('#roomId').val();
+			$.ajax({
+				url : urlHost + 'api/delete/room/' + room,
+				method: 'DELETE',
+				dataType: 'json',
+				success: function(response){
+					Swal.fire({
+						icon: 'success',
+						text: "Message has been deleted",
+					});
+					$(`#${room}`).remove();
+					$('#btnDelete').prop('disabled',false)
+					$('#deleteModal').modal('hide');
+				}, 
+				error: function(xhr){
+					console.log(xhr)
+					Swal.fire({
+						icon: 'error',
+						text: "Something error, please try again later",
+					});
+					$('#btnDelete').prop('disabled',false)
+					$('#deleteModal').modal('hide');
+				}
+			});
+		});
 	</script>
 </body>
 

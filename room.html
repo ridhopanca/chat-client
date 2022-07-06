@@ -45,6 +45,48 @@
 			font-size: 10px;
 		}
 
+		.ellipsis {
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			width: 300px;
+		}
+
+		@media only screen and (max-width: 1440px) {
+			.ellipsis {
+				width: 270px;
+			}
+		}
+		@media only screen and (max-width: 1024px) {
+			.ellipsis {
+				width: 160px;
+			}
+		}
+
+		@media only screen and (max-width: 768px) {
+			.ellipsis {
+				width: 620px;
+			}
+		}
+
+		@media only screen and (max-width: 480px) {
+			.ellipsis {
+				width: 300px;
+			}
+		}
+
+		@media only screen and (max-width: 375px) {
+			.ellipsis {
+				width: 260px;
+			}
+		}
+
+		@media only screen and (max-width: 320px) {
+			.ellipsis {
+				width: 200px;
+			}
+		}
+
 		/* .chat-message-left {
 			margin-right: auto;
 		}
@@ -95,7 +137,10 @@
 					<div class="card-header border-dark bg-dark text-white border-2 d-flex align-items-center">
 						<button class="btn btn-dark" onclick="back();"><i class="fa-solid fa-arrow-left"></i></button>
 						<div class="ms-2">
-							<p class="m-0">Room: <span class="fw-semibold m-0" id="nameRoom"></span></p>
+							<p class="m-0"><span class="fw-semibold m-0" id="nameRoom"></span></p>
+							<div id="users" class="ellipsis">
+	
+							</div>
 						</div>
 					</div>
 					<div class="card-body bg-secondary text-dark bg-opacity-10">
@@ -112,81 +157,31 @@
 				</div>
 			</div>
 		</div>
-
-		<main class="content d-none">
-			<div class="container p-0">
-				<div class="card">
-					<div class="row">
-						<div class="col-12 col-lg-7 col-xl-9">
-							<div class="position-relative">
-								<div class="chat-messages p-4">
-
-									<div class="mb-3 chat-message-right">
-										<div>
-											<img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1"
-												alt="Chris Wood" width="40" height="40">
-											<div class="text-muted small text-nowrap mt-2">2:33 am</div>
-										</div>
-										<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-											<div class="font-weight-bold mb-1">You</div>
-											Lorem ipsum dolor sit amet, vis erat denique in, dicunt prodesset te vix.
-										</div>
-									</div>
-
-									<div class="mb-3 chat-message-left">
-										<div>
-											<img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="rounded-circle mr-1"
-												alt="Sharon Lessman" width="40" height="40">
-											<div class="text-muted small text-nowrap mt-2">2:34 am</div>
-										</div>
-										<div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-											<div class="font-weight-bold mb-1">Sharon Lessman</div>
-											Sit meis deleniti eu, pri vidit meliore docendi ut, an eum erat animal commodo.
-										</div>
-									</div>
-
-									<div class="mb-3 chat-message-right">
-										<div>
-											<img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1"
-												alt="Chris Wood" width="40" height="40">
-											<div class="text-muted small text-nowrap mt-2">2:35 am</div>
-										</div>
-										<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-											<div class="font-weight-bold mb-1">You</div>
-											Cum ea graeci tractatos.
-										</div>
-									</div>
-
-									<div class="mb-3 chat-message-left">
-										<div>
-											<img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="rounded-circle mr-1"
-												alt="Sharon Lessman" width="40" height="40">
-											<div class="text-muted small text-nowrap mt-2">2:36 am</div>
-										</div>
-										<div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-											<div class="font-weight-bold mb-1">Sharon Lessman</div>
-											Sed pulvinar, massa vitae interdum pulvinar, risus lectus porttitor magna, vitae commodo lectus
-											mauris et velit.
-											Proin ultricies placerat imperdiet. Morbi varius quam ac venenatis tempus.
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="flex-grow-0 py-3 px-4 border-top">
-								<div class="input-group">
-									<input type="text" class="form-control" placeholder="Type your message">
-									<button class="btn btn-primary">Send</button>
-								</div>
-							</div>
-						</div>
-					</div>
+	</section>
+	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content border-0">
+				<div class="modal-header bg-dark justify-content-center">
+					<h5 class="modal-title text-white" id="exampleModalLabel">Delete Message</h5>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" name="messageId" id="messageId">
+					Are you sure want to delete this (<span id="messageText"></span>) message ?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-dark px-4" id="btnDelete">Delete</button>
 				</div>
 			</div>
-		</main>
-	</section>
+		</div>
+	</div>
 	<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js">
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.17.2/dist/sweetalert2.all.min.js"></script>
+	</script>
 	<script>
 		let urlHost = 'http://10.10.20.223:3000/'; //change with your local server
 		let roomId = localStorage.getItem('chatRoomId');
@@ -207,14 +202,14 @@
 				let substring = data.postedByUser.firstName.substr(0, 1);
 				if (fullname == username) {
 					template += `
-						<div class="flex-row-reverse mb-2 ms-auto d-flex text-end">
+						<div class="flex-row-reverse mb-2 ms-auto d-flex text-end" id="${data._id}">
 							<div class="ms-2">
 								<img src="https://via.placeholder.com/35x35/55585C/ffffff.jpg?text=${substring}" class="rounded-circle mr-1"
 									alt="Chris Wood">
 							</div>
 							<div>
 								<small class="fw-semibold mb-1 fs-10">${data.postedByUser.firstName}</small>
-								<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2">
+								<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2" onmousedown="onHold('${data._id}','${data.message.messageText}')" onmouseup="onUp()">
 									<p class="word-break m-0">${data.message.messageText}</p>
 								</div>
 								<small class="fs-10 text-secondary text-opacity-50">${convertDate(data.createdAt)}</small>
@@ -223,14 +218,14 @@
 						`;
 				} else {
 					template += `
-						<div class="mb-2 me-auto d-flex text-first">
+						<div class="mb-2 me-auto d-flex text-first" id="${data._id}">
 							<div class="me-2">
 								<img src="https://via.placeholder.com/35x35/ffffff/55585C.jpg?text=${substring}" class="rounded-circle mr-1"
 									alt="Sharon Lessman">
 							</div>
 							<div>
 								<div class="fw-semibold mb-1 fs-10 ">${data.postedByUser.firstName}</div>
-								<div class="flex-shrink-1 bg-light rounded p-2">
+								<div class="flex-shrink-1 bg-light rounded p-2" onmousedown="onHold('${data._id}','${data.message.messageText}')" onmouseup="onUp()">
 									<p class="word-break m-0">${data.message.messageText}</p>
 								</div>
 								<small class="fs-10 text-secondary text-opacity-50">${convertDate(data.createdAt)}</small>
@@ -257,7 +252,17 @@
 				dataType: 'json',
 				success: function (response) {
 					let template = '';
+					let userTemplate = '';
 					const chat = response.conversation;
+					const users = response.users;
+					$.map(users,function(item, i){
+						if(i == 0){
+							userTemplate += `<small>${item.firstName} ${item.lastName}</small>`;
+						} else {
+							userTemplate += `, <small>${item.firstName} ${item.lastName}</small>`;
+						}
+					})
+					$('#users').html(userTemplate);
 					if (chat.length > 0) {
 						$.each(chat, function (key, val) {
 							let fullname = val.postedByUser.firstName + ' ' + val.postedByUser.lastName;
@@ -265,14 +270,14 @@
 							if (fullname == username) {
 
 								template += `
-									<div class="flex-row-reverse mb-2 ms-auto d-flex text-end">
+									<div class="flex-row-reverse mb-2 ms-auto d-flex text-end" id="${val._id}">
 										<div class="ms-2">
 											<img src="https://via.placeholder.com/35x35/55585C/ffffff.jpg?text=${substring}" class="rounded-circle mr-1"
 												alt="Chris Wood">
 										</div>
 										<div>
 											<small class="fw-semibold mb-1 fs-10">${val.postedByUser.firstName}</small>
-											<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2">
+											<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2" onmousedown="onHold('${val._id}','${val.message.messageText}')" onmouseup="onUp()">
 												<p class="word-break m-0">${val.message.messageText}</p>
 											</div>
 											<small class="text-secondary text-opacity-50 fs-10">${convertDate(val.createdAt)}</small>
@@ -281,14 +286,14 @@
 									`;
 							} else {
 								template += `
-									<div class="mb-2 me-auto d-flex text-first">
+									<div class="mb-2 me-auto d-flex text-first" id="${val._id}">
 										<div class="me-2">
 											<img src="https://via.placeholder.com/35x35/ffffff/55585C.jpg?text=${substring}" class="rounded-circle mr-1"
 												alt="Sharon Lessman">
 										</div>
 										<div>
 											<div class="fw-semibold mb-1 fs-10 ">${val.postedByUser.firstName}</div>
-											<div class="flex-shrink-1 bg-light rounded p-2">
+											<div class="flex-shrink-1 bg-light rounded p-2" onmousedown="onHold('${val._id}','${val.message.messageText}')" onmouseup="onUp()">
 												<p class="word-break m-0">${val.message.messageText}</p>
 											</div>
 											<small class="text-secondary text-opacity-50 fs-10">${convertDate(val.createdAt)}</small>
@@ -394,14 +399,14 @@
 								if (fullname == username) {
 
 									template += `
-										<div class="flex-row-reverse mb-2 ms-auto d-flex text-end">
+										<div class="flex-row-reverse mb-2 ms-auto d-flex text-end" id="${val._id}">
 											<div class="ms-2">
 												<img src="https://via.placeholder.com/35x35/55585C/ffffff.jpg?text=${substring}" class="rounded-circle mr-1"
 													alt="Chris Wood">
 											</div>
 											<div>
 												<small class="fw-semibold mb-1 fs-10">${val.postedByUser.firstName}</small>
-												<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2">
+												<div class="flex-shrink-1 bg-dark bg-opacity-75 text-white rounded p-2" onmousedown="onHold('${val._id}','${val.message.messageText}')" onmouseup="onUp()">
 													<p class="word-break m-0">${val.message.messageText}</p>
 												</div>
 												<small class="text-secondary text-opacity-50 fs-10">${convertDate(val.createdAt)}</small>
@@ -410,14 +415,14 @@
 										`;
 								} else {
 									template += `
-										<div class="mb-2 me-auto d-flex text-first">
+										<div class="mb-2 me-auto d-flex text-first" id="${val._id}">
 											<div class="me-2">
 												<img src="https://via.placeholder.com/35x35/ffffff/55585C.jpg?text=${substring}" class="rounded-circle mr-1"
 													alt="Sharon Lessman">
 											</div>
 											<div>
-												<div class="fw-semibold mb-1 fs-10 ">${val.postedByUser.firstName}</div>
-												<div class="flex-shrink-1 bg-light rounded p-2">
+												<div class="fw-semibold mb-1 fs-10">${val.postedByUser.firstName}</div>
+												<div class="flex-shrink-1 bg-light rounded p-2" onmousedown="onHold('${val._id}','${val.message.messageText}')" onmouseup="onUp()">
 													<p class="word-break m-0">${val.message.messageText}</p>
 												</div>
 												<small class="text-secondary text-opacity-50 fs-10">${convertDate(val.createdAt)}</small>
@@ -445,6 +450,47 @@
 					}
 				});
         }
+		var timeOut = 0;
+		function onHold(message,text){
+			timeOut = setInterval(function(){
+				$('#messageId').val(message);
+				$('#messageText').text(text);
+				$('#exampleModal').modal('show');
+				clearInterval(timeOut);
+			}, 1000);
+		}
+
+		function onUp(){
+			clearInterval(timeOut);
+		}
+
+		$('#btnDelete').click(function(){
+			$('#btnDelete').prop('disabled',true)
+			let message = $('#messageId').val();
+			console.log(message)
+			$.ajax({
+				url : urlHost + 'api/delete/message/' + message,
+				method: 'DELETE',
+				dataType: 'json',
+				success: function(response){
+					Swal.fire({
+						icon: 'success',
+						text: "Message has been deleted",
+					});
+					$(`#${message}`).remove();
+					$('#btnDelete').prop('disabled',false)
+					$('#exampleModal').modal('hide');
+				}, 
+				error: function(xhr){
+					console.log(xhr)
+					Swal.fire({
+						icon: 'error',
+						text: "Something error, please try again later",
+					});
+					$('#btnDelete').prop('disabled',false)
+				}
+			});
+		});
 	</script>
 </body>
 

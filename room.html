@@ -46,47 +46,13 @@
 		}
 
 		.ellipsis {
+			display: inline-block;
+			max-width: 85%;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
-			width: 300px;
 		}
-
-		@media only screen and (max-width: 1440px) {
-			.ellipsis {
-				width: 270px;
-			}
-		}
-		@media only screen and (max-width: 1024px) {
-			.ellipsis {
-				width: 160px;
-			}
-		}
-
-		@media only screen and (max-width: 768px) {
-			.ellipsis {
-				width: 620px;
-			}
-		}
-
-		@media only screen and (max-width: 480px) {
-			.ellipsis {
-				width: 300px;
-			}
-		}
-
-		@media only screen and (max-width: 375px) {
-			.ellipsis {
-				width: 260px;
-			}
-		}
-
-		@media only screen and (max-width: 320px) {
-			.ellipsis {
-				width: 200px;
-			}
-		}
-
+		
 		/* .chat-message-left {
 			margin-right: auto;
 		}
@@ -136,7 +102,7 @@
 				<div class="card border-dark border-2 mt-2">
 					<div class="card-header border-dark bg-dark text-white border-2 d-flex align-items-center">
 						<button class="btn btn-dark" onclick="back();"><i class="fa-solid fa-arrow-left"></i></button>
-						<div class="ms-2">
+						<div class="ms-2 w-100">
 							<p class="m-0"><span class="fw-semibold m-0" id="nameRoom"></span></p>
 							<div id="users" class="ellipsis">
 	
@@ -262,6 +228,17 @@
 							userTemplate += `, <small>${item.firstName} ${item.lastName}</small>`;
 						}
 					})
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
+
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
+
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
+
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
+					userTemplate += `, <small>aaaaaaaaaaaaaaaaaaaaaaaa</small>`;
 					$('#users').html(userTemplate);
 					if (chat.length > 0) {
 						$.each(chat, function (key, val) {
